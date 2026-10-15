@@ -1,6 +1,6 @@
 # QuickSort com Particionamento de Hoare
 
-Trabalho AV-2 da disciplina [NOME DA DISCIPLINA], Universidade de Fortaleza.
+Trabalho AV-2 da disciplina Construção de Algoritmos, Universidade de Fortaleza.
 
 ## Sobre o projeto
 
@@ -43,4 +43,4 @@ java -cp bin Main
 
 ## Autor
 
-[SEU NOME] | Matrícula: [SUA MATRÍCULA]
+João Francisco Morais Paz 
