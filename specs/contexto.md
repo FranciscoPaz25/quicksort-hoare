@@ -145,7 +145,7 @@ Fazer a análise **depois** do código final, para evitar retrabalho.
 - [x] `GeradorVetores.gerarPermutacao(n)`: preencher 1..n e embaralhar com Fisher-Yates
 - [x] Testar o gerador no `Main` (ordens diferentes a cada execução, 1..n sem repetir) e conferir com `estaOrdenado()` após o QuickSort
 - [x] Adaptar o `Main` para os testes com `Vetor`
-- [ ] Pivô aleatório: sortear posição entre `inicio` e `fim` (o `sortear` vai de 0 a `max`, então precisa de ajuste) e trocar com `inicio`
+- [x] Pivô aleatório: sortear posição entre `inicio` e `fim` (o `sortear` vai de 0 a `max`, então precisa de ajuste) e trocar com `inicio`
 - [ ] QuickSort Proporcional com α
 - [ ] Tratamento do `StackOverflowError`
 - [ ] Comentários no código

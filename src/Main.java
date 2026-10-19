@@ -1,12 +1,11 @@
 public class Main {
     public static void main(String[] args) {
 
-        Vetor v = GeradorVetores.gerarPermutacao(10);
-        v.imprimir();
+        Vetor v = GeradorVetores.gerarPermutacao(100000);
+        
 
-        System.out.println();
+        Quicksort.quicksortAleatorio(v, 0, v.tamanho() - 1);
 
-        Quicksort.quicksort(v, 0, v.tamanho() - 1);
-        v.imprimir();
+        System.out.println(v.estaOrdenado());
     }
 }

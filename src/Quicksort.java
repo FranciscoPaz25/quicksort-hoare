@@ -10,6 +10,19 @@ public class Quicksort {
         quicksort(v, j + 1, fim);
     }
 
+    static void quicksortAleatorio(Vetor v, int inicio, int fim) {
+        if (fim <= inicio) {
+            return;
+        }
+
+        int posicaoPivo = inicio + GeradorVetores.sortear(fim - inicio);
+        v.trocar(inicio, posicaoPivo);
+
+        int j = particionaHoare(v, inicio, fim);
+        quicksortAleatorio(v, inicio, j);
+        quicksortAleatorio(v, j + 1, fim);
+    }
+
     static int particionaHoare(Vetor v, int inicio, int fim) {
         int pivo = v.get(inicio);
         int i = inicio - 1;
