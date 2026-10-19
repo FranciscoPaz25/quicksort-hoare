@@ -1,6 +1,6 @@
 # QuickSort com Particionamento de Hoare
 
-Trabalho AV-2 da disciplina Construção de Algoritmos, Universidade de Fortaleza.
+Trabalho AV-2 da disciplina Construção e Análise de Algoritmos, Universidade de Fortaleza.
 
 ## Sobre o projeto
 
@@ -9,7 +9,7 @@ Implementação do algoritmo QuickSort em Java, sobre vetores de inteiros, usand
 - **QuickSort com pivô aleatório**
 - **QuickSort Proporcional**, que recebe um valor α e força a divisão α : (1 − α)
 
-Os vetores de entrada são permutações aleatórias dos inteiros de 1 a n, sem repetição.
+Os vetores de entrada são permutações aleatórias dos inteiros de 1 a n, sem repetição, geradas com o embaralhamento de Fisher-Yates.
 
 A análise de complexidade de cada versão está na documentação, na pasta `docs/`.
 
@@ -18,13 +18,13 @@ A análise de complexidade de cada versão está na documentação, na pasta `do
 ```
 quicksort-hoare/
 ├── src/
-│   ├── Main.java
-│   ├── Vetor.java
-│   ├── GeradorVetores.java
-│   └── QuickSort.java
-├── docs/
-│   ├── documentacao.pdf
-│   └── diagramas/
+│   ├── Main.java            → ponto de entrada e testes
+│   ├── Vetor.java           → TAD que encapsula o vetor de inteiros
+│   ├── GeradorVetores.java  → gera permutações aleatórias de 1 a n (Fisher-Yates)
+│   └── Quicksort.java       → particionamento de Hoare e versões do QuickSort
+├── docs/                    → documentação e diagramas
+├── specs/                   → anotações de acompanhamento do projeto
+├── .gitignore
 └── README.md
 ```
 
@@ -43,4 +43,4 @@ java -cp bin Main
 
 ## Autor
 
-João Francisco Morais Paz 
+João Francisco
