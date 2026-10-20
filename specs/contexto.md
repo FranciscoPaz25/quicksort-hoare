@@ -52,6 +52,10 @@ Não é preciso analisar os métodos do `Vetor`, o gerador ou o `Main`.
 | Pivô aleatório = sortear posição e trocar com `inicio` | Assim o `particionaHoare` não muda |
 | Embaralhamento de **Fisher-Yates** no gerador | Gera todas as permutações com a mesma probabilidade (ver seção 4) |
 | Evitar `Arrays.sort`, `Collections.shuffle`, `Arrays.toString` | O professor não quer bibliotecas que façam o trabalho |
+| Valores de α: **1/4** (25/75) e **1/5** (20/80) | Escolha do aluno entre 1/2, 1/3, 1/4 e 1/5 (90/10 proibido) |
+| Pivô proporcional escolhido pelo **valor**, não pela posição | Como o vetor é permutação de 1 a n, o valor k tem exatamente k − 1 menores. A posição não serve porque o vetor está embaralhado |
+| `buscarPosicao` separado do `quicksortProporcional` | Uma responsabilidade por método: o proporcional decide **qual** valor; a busca descobre **onde** ele está |
+| α passado como `1.0 / 4` e `1.0 / 5` | Em Java, `1 / 4` é divisão inteira e vale 0 |
 | Sorteio com `Math.random()`, não `java.util.Random` | Faz parte do `java.lang`, sem import. Fica isolado no método `sortear`, então trocar a fonte de aleatoriedade depois mexe em um lugar só |
 
 ### Por que Hoare (para a justificativa na documentação)
@@ -83,7 +87,7 @@ quicksort-hoare/
 │   ├── Main.java            → testes
 │   ├── Vetor.java           → TAD (pronto)
 │   ├── GeradorVetores.java  → permutações com Fisher-Yates (pronto)
-│   └── Quicksort.java       → Hoare + recursão (pronto, pivô fixo)
+│   └── Quicksort.java       → Hoare, pivô fixo, aleatório (pronto) e proporcional (escrito, falta testar)
 ├── docs/
 ├── specs/
 │   └── contexto.md
@@ -108,10 +112,25 @@ Métodos: `Vetor(int n)`, `tamanho()`, `get(i)`, `set(i, valor)`, `trocar(i, j)`
 - Repetir o `j` sorteado **não** é problema: as trocas nunca criam valores repetidos.
 - Importância para o trabalho: a análise de caso médio supõe que todas as permutações são igualmente prováveis.
 
-### `Quicksort.java` (pronto, pivô fixo no início)
-- `quicksort(Vetor v, int inicio, int fim)`: parada em `fim <= inicio`, recursão em `(inicio, j)` e `(j + 1, fim)`.
-- `particionaHoare(Vetor v, int inicio, int fim)`: pivô em `v.get(inicio)`, dois `do-while`, `i >= j` retorna `j`, senão `v.trocar(i, j)`.
+### `Quicksort.java`
+- `quicksort(Vetor v, int inicio, int fim)`: pivô fixo no início. Parada em `fim <= inicio`, recursão em `(inicio, j)` e `(j + 1, fim)`.
+- `particionaHoare(Vetor v, int inicio, int fim)`: pivô em `v.get(inicio)`, dois `do-while`, `i >= j` retorna `j`, senão `v.trocar(i, j)`. **Usado por todas as versões.**
+- `quicksortAleatorio(v, inicio, fim)` (pronto e testado): `posicaoPivo = inicio + GeradorVetores.sortear(fim - inicio)`, troca com `inicio`, particiona, recursão chamando `quicksortAleatorio`.
+- `buscarPosicao(v, inicio, fim, valor)`: percorre `inicio..fim` (inclusive) e devolve a posição do valor, ou −1.
+- `quicksortProporcional(v, inicio, fim, alpha)` (escrito, falta testar):
+  - `tamanho = fim - inicio + 1` (não `fim`, nem `v.tamanho()`)
+  - `menorValor = inicio + 1`
+  - `qtdMenores = (int) (tamanho * alpha)`
+  - `valorPivo = menorValor + qtdMenores`
+  - busca a posição do `valorPivo`, troca com `inicio`, particiona, recursão passando o mesmo `alpha`.
 - Opcional: método de entrada `quicksort(Vetor v)` por sobrecarga, chamando a versão completa com o vetor inteiro.
+
+**Por que o proporcional funciona (a "regra das cartas"):**
+- Pivô = menor carta do monte + quantas cartas devem ficar do lado das menores.
+- Cada pedaço `[inicio..fim]` guarda valores em sequência, de `inicio + 1` até `fim + 1`, porque o Hoare manda todos os menores para a esquerda.
+- Conferência com α = 1/4: pedaço 0..99 → pivô 26; pedaço 25..99 (tamanho 75, valores 26..100) → 18 menores → pivô 44.
+- Arredondar para baixo deixa a proporção inexata em pedaços pequenos; com `qtdMenores = 0`, o pivô é o menor valor e o Hoare separa 1 elemento. Vale uma linha na documentação.
+- A busca custa Θ(n) por chamada, igual ao particionamento, então **não muda a complexidade**: o custo por nível continua cn, só com c maior. Usar isso na análise do item iii.
 
 ### Casos de teste (todos passaram com a versão `int[]`)
 | Caso | Vetor | Esperado |
@@ -143,10 +162,9 @@ Fazer a análise **depois** do código final, para evitar retrabalho.
 ## 6. Próximos passos
 
 - [x] `GeradorVetores.gerarPermutacao(n)`: preencher 1..n e embaralhar com Fisher-Yates
-- [x] Testar o gerador no `Main` (ordens diferentes a cada execução, 1..n sem repetir) e conferir com `estaOrdenado()` após o QuickSort
-- [x] Adaptar o `Main` para os testes com `Vetor`
-- [x] Pivô aleatório: sortear posição entre `inicio` e `fim` (o `sortear` vai de 0 a `max`, então precisa de ajuste) e trocar com `inicio`
-- [ ] QuickSort Proporcional com α
+- [x] Testar o gerador no `Main`
+- [x] Pivô aleatório (testado)
+- [x] Colar `buscarPosicao` e `quicksortProporcional`, testar com α = 1/4 e 1/5 e commitar
 - [ ] Tratamento do `StackOverflowError`
 - [ ] Comentários no código
 - [ ] Testar compilação pelo terminal (`javac -d bin src/*.java`)
