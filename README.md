@@ -13,7 +13,7 @@ As duas versões usam o mesmo procedimento de particionamento.
 
 Os vetores de entrada são permutações aleatórias dos inteiros de 1 a n, sem repetição, geradas com o embaralhamento de Fisher-Yates.
 
-A análise de complexidade de cada versão está na documentação, na pasta `docs/`.
+A documentação completa (introdução, implementação e análise de complexidade) está em `docs/documentacao.pdf`.
 
 ## Estrutura
 
@@ -24,8 +24,10 @@ quicksort-hoare/
 │   ├── Vetor.java           → TAD que encapsula o vetor de inteiros
 │   ├── GeradorVetores.java  → gera permutações aleatórias de 1 a n (Fisher-Yates)
 │   └── Quicksort.java       → particionamento de Hoare, QuickSort aleatório e proporcional
-├── docs/                    → documentação e diagramas
-├── specs/                   → anotações de acompanhamento do projeto
+├── docs/
+│   ├── documentacao.pdf     → documentação final (A, B e C)
+│   ├── documentacao.md      → fonte da documentação
+│   └── diagramas/           → árvores de recursão e diagramas das estruturas
 ├── .gitignore
 └── README.md
 ```
@@ -39,7 +41,7 @@ quicksort-hoare/
 Na pasta raiz do projeto:
 
 ```bash
-javac -d bin src/*.java
+javac -encoding UTF-8 -d bin src/*.java
 java -cp bin Main
 ```
 

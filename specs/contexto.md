@@ -87,8 +87,11 @@ quicksort-hoare/
 │   ├── Main.java            → testes
 │   ├── Vetor.java           → TAD (pronto)
 │   ├── GeradorVetores.java  → permutações com Fisher-Yates (pronto)
-│   └── Quicksort.java       → Hoare, pivô fixo, aleatório (pronto) e proporcional (escrito, falta testar)
+│   └── Quicksort.java       → Hoare, pivô fixo, aleatório e proporcional (prontos, com tratamento da pilha)
 ├── docs/
+│   ├── documentacao.pdf     → documentação final (A, B, C)
+│   ├── documentacao.md      → fonte da documentação
+│   └── diagramas/           → árvores de recursão e diagramas
 ├── specs/
 │   └── contexto.md
 ├── .gitignore
@@ -117,13 +120,13 @@ Métodos: `Vetor(int n)`, `tamanho()`, `get(i)`, `set(i, valor)`, `trocar(i, j)`
 - `particionaHoare(Vetor v, int inicio, int fim)`: pivô em `v.get(inicio)`, dois `do-while`, `i >= j` retorna `j`, senão `v.trocar(i, j)`. **Usado por todas as versões.**
 - `quicksortAleatorio(v, inicio, fim)` (pronto e testado): `posicaoPivo = inicio + GeradorVetores.sortear(fim - inicio)`, troca com `inicio`, particiona, recursão chamando `quicksortAleatorio`.
 - `buscarPosicao(v, inicio, fim, valor)`: percorre `inicio..fim` (inclusive) e devolve a posição do valor, ou −1.
-- `quicksortProporcional(v, inicio, fim, alpha)` (escrito, falta testar):
+- `quicksortProporcional(v, inicio, fim, alpha)` (pronto e testado):
   - `tamanho = fim - inicio + 1` (não `fim`, nem `v.tamanho()`)
   - `menorValor = inicio + 1`
   - `qtdMenores = (int) (tamanho * alpha)`
   - `valorPivo = menorValor + qtdMenores`
   - busca a posição do `valorPivo`, troca com `inicio`, particiona, recursão passando o mesmo `alpha`.
-- Opcional: método de entrada `quicksort(Vetor v)` por sobrecarga, chamando a versão completa com o vetor inteiro.
+- **Tratamento do `StackOverflowError` (nas três versões):** `while (inicio < fim)`, recursão só no lado menor e atualização de `inicio`/`fim` para o lado maior. Profundidade da pilha ≤ log₂ n. Protege a memória, não melhora o tempo (pior caso continua O(n²)).
 
 **Por que o proporcional funciona (a "regra das cartas"):**
 - Pivô = menor carta do monte + quantas cartas devem ficar do lado das menores.
@@ -132,7 +135,7 @@ Métodos: `Vetor(int n)`, `tamanho()`, `get(i)`, `set(i, valor)`, `trocar(i, j)`
 - Arredondar para baixo deixa a proporção inexata em pedaços pequenos; com `qtdMenores = 0`, o pivô é o menor valor e o Hoare separa 1 elemento. Vale uma linha na documentação.
 - A busca custa Θ(n) por chamada, igual ao particionamento, então **não muda a complexidade**: o custo por nível continua cn, só com c maior. Usar isso na análise do item iii.
 
-### Casos de teste (todos passaram com a versão `int[]`)
+### Casos de teste (todos passam na versão final com `Vetor`)
 | Caso | Vetor | Esperado |
 |---|---|---|
 | exemplo | `{5, 3, 8, 1, 9, 2, 7}` | `1 2 3 5 7 8 9` |
@@ -145,29 +148,34 @@ Métodos: `Vetor(int n)`, `tamanho()`, `get(i)`, `set(i, valor)`, `trocar(i, j)`
 | pivô menor | `{1, 5, 6}` | `1 5 6` |
 | pivô maior | `{9, 4, 7, 2}` | `2 4 7 9` |
 
-Rodar de novo após a migração para o `Vetor`.
+Além deles: permutações com n até 1.000.000 nas três versões pedidas e o pior caso do pivô fixo com 20.000 elementos (sem estouro de pilha, mesmo com `-Xss256k`).
 
 ---
 
-## 5. Plano da análise de complexidade
+## 5. Resultados da análise (detalhes em `docs/documentacao.pdf`)
 
-1. **Item i:** tabela linha | custo | vezes. Nos `do-while`, contar os passos **no total da execução**: `i` e `j` juntos percorrem o vetor uma vez (mais 1 ou 2 passos ao se cruzarem). Trocas ≤ n/2. Resultado: Θ(n).
-2. **Item ii:** montar a recorrência a partir do código. Atenção: a recorrência de sala provavelmente usa Lomuto (subproblemas q − 1 e n − q). No Hoare, os subproblemas são `[inicio..j]` e `[j+1..fim]`, sem ninguém sair. Saber explicar a diferença.
-3. **Item iii:** recorrência → árvore → h_min e h_max → cn · h_min ≤ T(n) ≤ cn · h_max → complexidade.
+| Item | Resultado |
+|---|---|
+| i. `particionaHoare` | n ≤ Sᵢ + Sⱼ ≤ n + 2, trocas ≤ n/2 → **Θ(n)** |
+| ii. Pivô aleatório (caso médio) | Recorrência do Hoare: T(n) = n + 1/(n−1) · Σ_{k=1}^{n−1} [T(k) + T(n−k)] → T(n) = n·T(1) + 2n(Hₙ − 1) ≈ 1,39 n log₂ n → **Θ(n log n)** |
+| iii. α = 1/4 | h_min = log₄ n, h_max = log₄/₃ n ≈ 2,409 log₂ n → **Θ(n log n)** |
+| iii. α = 1/5 | h_min = log₅ n, h_max = log₅/₄ n ≈ 3,106 log₂ n → **Θ(n log n)** |
+| Partição 0 / n − 1 | **Θ(n²)** |
 
-Fazer a análise **depois** do código final, para evitar retrabalho.
+Observações:
+- No Hoare nenhum lado fica vazio: lados k e n − k, com k de 1 a n − 1, e média dividida por n − 1 (diferente da recorrência de sala, que usa Lomuto).
+- No Hoare real, a partição 1|n−1 sai com chance 2/n; a diferença para o modelo uniforme é de 1% a 3% e não muda a ordem.
+- Os slides 242 a 246 da aula (caso médio) não estavam no PDF enviado; a derivação seguiu a forma clássica adaptada ao Hoare.
 
 ---
 
 ## 6. Próximos passos
 
-- [x] `GeradorVetores.gerarPermutacao(n)`: preencher 1..n e embaralhar com Fisher-Yates
-- [x] Testar o gerador no `Main`
-- [x] Pivô aleatório (testado)
-- [x] Colar `buscarPosicao` e `quicksortProporcional`, testar com α = 1/4 e 1/5 e commitar
-- [ ] Tratamento do `StackOverflowError`
-- [ ] Comentários no código
-- [ ] Testar compilação pelo terminal (`javac -d bin src/*.java`)
-- [ ] Análise de complexidade (itens i, ii, iii) e quadro-resumo
-- [ ] Documentação (A, B, C) com diagramas
-- [ ] Ensaiar a apresentação
+- [x] Código completo, comentado e testado
+- [x] Tratamento do `StackOverflowError`
+- [x] Análise de complexidade (itens i, ii, iii) e quadro-resumo
+- [x] Documentação (A, B, C) com diagramas, em PDF
+- [x] `.zip` de entrega
+- [ ] Reescrever trechos da documentação com as próprias palavras
+- [ ] Imprimir a documentação
+- [ ] Ensaiar a apresentação (ver `roteiro-apresentacao.md`) e explicar o trabalho do zero, com a skill de explicação de volta
